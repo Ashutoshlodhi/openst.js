@@ -10,10 +10,11 @@ contractReader.prototype = {
     console.log("webpackOverwrite");
     console.log("filePath" , filePath );
     if( !this.dataHash[filePath] ){
-      let filePath = filePath + '.js' ,
-          data = require(  filePath ) ;
+      let updatedFilePath = filePath + '.js' ,
+          data = require(  updatedFilePath ) ;
       console.log("update file path" , data );
       console.log("required data" , data );
+      this.dataHash[filePath] = data;
       return data ;
     }
     console.log("this.dataHash[filePath]" , this.dataHash[filePath] );

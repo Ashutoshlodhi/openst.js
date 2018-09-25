@@ -3,7 +3,7 @@
 const fs = require('fs'),
   path = require('path');
 
-const contractReader = require('../../utils/contractReader');
+const contractReader = require('../utils/contractReader');
 
 const Helper = function() {};
 
