@@ -14,15 +14,24 @@ dataHash['TokenHolder.bin'] = require('../dist/contracts/bin/TokenHolder.bin.js'
 dataHash['TokenRules.bin'] = require('../dist/contracts/bin/TokenRules.bin.js');
 dataHash['TransferRule.bin'] = require('../dist/contracts/bin/TransferRule.bin.js');
 
-const contractReader = function() {};
+const ContractProvider = function() {};
 
-contractReader.prototype = {
-  parseFile: function(filePath, options) {
-    var fileSplit = filePath && filePath.split('/'),
-      len = fileSplit && fileSplit.length - 1,
-      key = len && fileSplit[len];
-    return dataHash[key] || {};
+ContractProvider.prototype = {
+  getABI: function(name, options) {
+    name = name + '.abi';
+    const fileContent = dataHash[name];
+    if (typeof fileContent == 'string') {
+      return JSON.parse(fileContent);
+    }
+
+    return fileContent;
+  },
+
+  getBIN: function(name, options) {
+    name = name + '.bin';
+    console.log('webpackOverWrite');
+    return dataHash[name];
   }
 };
 
-module.exports = new contractReader();
+module.exports = new ContractProvider();

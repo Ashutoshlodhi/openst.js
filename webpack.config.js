@@ -14,7 +14,7 @@ const webpackOption = {
     path: path.resolve(__dirname, 'dist'),
     filename: '[name].js'
   },
-  plugins: [new webpack.NormalModuleReplacementPlugin(/utils\/contractReader\.js/, 'contractReaderWebOverwrite.js')],
+  plugins: [new webpack.NormalModuleReplacementPlugin(/utils\/contractProvider\.js/, 'contractProviderWeb.js')],
   module: {
     rules: [
       {

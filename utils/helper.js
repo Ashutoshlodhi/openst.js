@@ -3,8 +3,6 @@
 const fs = require('fs'),
   path = require('path');
 
-const contractReader = require('../utils/contractReader');
-
 const Helper = function() {};
 
 Helper.prototype = {
@@ -23,7 +21,7 @@ Helper.prototype = {
 
   _read: function(filePath) {
     filePath = path.join(__dirname, '/' + filePath);
-    return contractReader.parseFile( filePath , 'utf8');
+    return fs.readFileSync(filePath, 'utf8');
   }
 };
 module.exports = new Helper();
