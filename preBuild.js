@@ -2,21 +2,20 @@
 
 const fs = require('fs'),
   rootPrefix = '.',
-  writeFolderPrefix = '/dist',
-  paths = ['/contracts/abi', '/contracts/bin'];
+  paths = ['/contracts/abi', '/contracts/bin'],
+  writableFile = rootPrefix + '/utils/contractProviderWeb.js';
 
 function prepareData(option) {
   var fileContent = null,
     dirFilePath = null,
     readFilePath = null,
-    writeFilePath = null,
-    filePath = null,
-    option = option || 'utf8';
+    option = option || 'utf8',
+    insertContent = null,
+    fileInsertContents = [];
   paths.forEach(function(path) {
     dirFilePath = rootPrefix + path;
     fs.readdir(dirFilePath, function(err, items) {
       items.forEach(function(item) {
-        if (item.indexOf('.js') > -1) return;
         readFilePath = rootPrefix + path + '/' + item;
         fileContent = fs.readFileSync(readFilePath, option);
         try {
@@ -24,11 +23,27 @@ function prepareData(option) {
         } catch (e) {
           fileContent = '"' + fileContent + '"';
         }
-        writeFilePath = rootPrefix + writeFolderPrefix + path + '/' + item + '.js';
-        fileContent = 'module.exports = ' + fileContent;
-        fs.writeFileSync(writeFilePath, fileContent, option);
+        insertContent = "dataHash['" + item + "'] = " + fileContent;
+        fileInsertContents.push(insertContent);
       });
     });
+  });
+
+  fs.readFile(writableFile, 'utf8', function(err, data) {
+    const startDelimiter = '//startDataHash',
+      endDelimiter = '//endDataHash',
+      newline = '\r\n',
+      regexPattern = startDelimiter + '.*?' + endDelimiter;
+
+    let replaceRegex = new RegExp(regexPattern, 's');
+    if (!replaceRegex.test(data)) {
+      throw ' -- Error in prescript content replace, someone changed the commend //startDataHash //endDataHash';
+    }
+
+    let fileContent = startDelimiter + newline + fileInsertContents.join(';' + newline) + newline + endDelimiter,
+      result = data.replace(replaceRegex, fileContent);
+
+    fs.writeFileSync(writableFile, result);
   });
 }
 
