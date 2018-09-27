@@ -4,7 +4,7 @@ const path = require('path'),
 
 const rootPreFix = '.',
   entryFile = rootPreFix + '/index.js',
-  polyfillFile = rootPreFix + '/node_modules/regenerator/runtime.js';
+  polyfillFile = '@babel/polyfill';
 
 const webpackOption = {
   target: 'web',
