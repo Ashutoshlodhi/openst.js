@@ -1,14 +1,17 @@
-const path = require('path');
+const path = require('path'),
+  webpack = require('webpack'),
+  uglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
-const webpack = require('webpack');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const rootPreFix = '.',
+  entryFile = rootPreFix + '/index.js',
+  polyfillFile = rootPreFix + '/node_modules/regenerator/runtime.js';
 
 const webpackOption = {
   target: 'web',
   node: { fs: 'empty' },
   entry: {
-    bundle: './index.js',
-    'bundle.min': './index.js'
+    bundle: [polyfillFile, entryFile],
+    'bundle.min': [polyfillFile, entryFile]
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -18,20 +21,32 @@ const webpackOption = {
   module: {
     rules: [
       {
-        test: /\.js$/,
-        use: {
-          loader: 'babel-loader',
-          options: {
-            presets: ['@babel/preset-env']
+        test: /\.m?js$/,
+        exclude: /(node_modules|bower_components)/,
+        use: [
+          {
+            loader: 'babel-loader',
+            options: {
+              presets: [
+                [
+                  '@babel/preset-env',
+                  {
+                    targets: {
+                      browsers: '> 0.25%, not dead'
+                    }
+                  }
+                ]
+              ]
+            }
           }
-        }
+        ]
       }
     ]
   },
   optimization: {
     minimize: true,
     minimizer: [
-      new UglifyJsPlugin({
+      new uglifyJsPlugin({
         include: /\.min\.js$/
       })
     ]
